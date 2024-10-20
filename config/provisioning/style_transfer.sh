@@ -8,6 +8,9 @@
 
 #DEFAULT_WORKFLOW="https://..."
 
+# For this file, if is private use  this
+# https://$TOKEN@raw.githubusercontent.com/<user or organization>/<repo name>/<branch>/<path to file>/<file_name>
+
 APT_PACKAGES=(
     #"package-1"
     #"package-2"
@@ -22,6 +25,11 @@ NODES=(
     #"https://github.com/ltdrdata/ComfyUI-Manager"
     # "https://github.com/cubiq/ComfyUI_essentials"
 )
+
+# with the auth we can use this github link like this
+# "https://${GITHUB_TOKEN}:@github.com/${GITHUB_REPOSITORY}"
+
+
 
 CHECKPOINT_MODELS=(
     # "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.ckpt"
