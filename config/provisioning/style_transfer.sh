@@ -24,9 +24,9 @@ NODES=(
 )
 
 CHECKPOINT_MODELS=(
-    #"https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.ckpt"
-    #"https://huggingface.co/stabilityai/stable-diffusion-2-1/resolve/main/v2-1_768-ema-pruned.ckpt"
-    #"https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors"
+    # "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.ckpt"
+    # "https://huggingface.co/stabilityai/stable-diffusion-2-1/resolve/main/v2-1_768-ema-pruned.ckpt"
+    # "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors"
     #"https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors"
 )
 
@@ -129,11 +129,19 @@ function provisioning_get_pip_packages() {
 
 function provisioning_get_nodes() {
     for entry in "${NODES[@]}"; do
-        IFS=':' read -r repo commit_hash <<< "$entry"
+        read -r repo commit_hash <<< "$entry"
         dir="${repo##*/}"
         path="/opt/ComfyUI/custom_nodes/${dir}"
         requirements="${path}/requirements.txt"
         if [[ -d $path ]]; then
+            if [[ -n $commit_hash ]]; then
+                printf "Updading node: %s...\n" "${repo}"
+                printf "Checking out to commit: %s...\n" "$commit_hash"
+                (cd "$path" && git checkout "$commit_hash")
+                if [[ -e $requirements ]]; then
+                   pip_install -r "$requirements"
+                fi
+            fi 
             if [[ ${AUTO_UPDATE,,} != "false" ]]; then
                 printf "Updating node: %s...\n" "${repo}"
                 ( cd "$path" && git pull )
@@ -146,9 +154,7 @@ function provisioning_get_nodes() {
             git clone "${repo}" "${path}" --recursive
             if [[ -n $commit_hash ]]; then
                 printf "Checking out to commit: %s...\n" "$commit_hash"
-                cd "$path" 
-                git checkout "$commit_hash"
-                cd ..
+                (cd "$path" && git checkout "$commit_hash")
             fi
             if [[ -e $requirements ]]; then
                 pip_install -r "${requirements}"
