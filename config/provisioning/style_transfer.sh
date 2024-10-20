@@ -22,8 +22,8 @@ PIP_PACKAGES=(
 )
 
 NODES=(
-    #"https://github.com/ltdrdata/ComfyUI-Manager"
-    # "https://github.com/cubiq/ComfyUI_essentials"
+    # "https://github.com/ltdrdata/ComfyUI-Manager"
+    # "https://github.com/cubiq/ComfyUI_essentials ef704350e7d44d3dc744d1b386cc65dd3e93a090"
 )
 
 # with the auth we can use this github link like this
