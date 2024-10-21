@@ -181,12 +181,20 @@ function provisioning_get_pip_packages() {
     fi
 }
 
+function run_node_custom_install() {
+    if [ -f "$1" ]; then
+        echo "Running install Python script at $1..."
+        python "$1"
+    fi
+}
+
 function provisioning_get_nodes() {
     for entry in "${NODES[@]}"; do
         read -r repo commit_hash <<< "$entry"
         dir="${repo##*/}"
         path="/opt/ComfyUI/custom_nodes/${dir}"
         requirements="${path}/requirements.txt"
+        install_script="${path}/install.py"
         if [[ -d $path ]]; then
             if [[ -n $commit_hash ]]; then
                 printf "Updading node: %s...\n" "${repo}"
@@ -195,6 +203,7 @@ function provisioning_get_nodes() {
                 if [[ -e $requirements ]]; then
                    pip_install -r "$requirements"
                 fi
+                run_node_custom_install "$install_script"
             fi 
             if [[ ${AUTO_UPDATE,,} != "false" ]]; then
                 printf "Updating node: %s...\n" "${repo}"
@@ -202,6 +211,7 @@ function provisioning_get_nodes() {
                 if [[ -e $requirements ]]; then
                    pip_install -r "$requirements"
                 fi
+                run_node_custom_install "$install_script"
             fi
         else
             printf "Downloading node: %s...\n" "${repo}"
